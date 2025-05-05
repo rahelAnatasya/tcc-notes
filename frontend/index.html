@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notes App</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>NOTES APP</h1>
+
+      <div class="actions">
+        <button id="addNoteButton" class="primary-btn">Add New Note</button>
+      </div>
+
+      <div class="notes-container">
+        <h2>Your Notes</h2>
+        <div id="notesList"></div>
+      </div>
+    </div>
+
+    <!-- Include API.js first, then list.js -->
+    <script src="js/api.js"></script>
+    <script src="js/list.js"></script>
+  </body>
+</html>

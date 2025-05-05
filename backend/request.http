@@ -1,0 +1,39 @@
+GET http://localhost:5000/users
+
+###
+POST http://localhost:5000/users
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "johndoe@gmail.com",
+  "password": "123456"
+}
+
+###
+GET http://localhost:5000/notes
+
+###
+POST http://localhost:5000/notes
+Content-Type: application/json
+
+{
+  "title": "Sample Note",
+  "content": "This is a sample note content",
+  "userId": 1
+}
+
+###
+GET http://localhost:5000/notes/1
+
+###
+PUT http://localhost:5000/notes/1
+Content-Type: application/json
+
+{
+  "title": "Updated Note",
+  "content": "This is the updated note content"
+}
+
+###
+DELETE http://localhost:5000/notes/1

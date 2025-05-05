@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>View Note - Notes App</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1 id="noteTitle">Loading note...</h1>
+
+      <div class="note-detail">
+        <div class="note-content" id="noteContent">
+          <!-- Note content will be loaded here -->
+        </div>
+
+        <div class="note-meta" id="noteDate"></div>
+
+        <div class="buttons" style="margin-top: 50px">
+          <button id="editButton" class="primary-btn">Edit Note</button>
+          <button id="deleteButton" class="delete-btn">Delete Note</button>
+          <button id="backButton" class="cancel-btn">Back to List</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Include API.js first, then view.js -->
+    <script src="js/api.js"></script>
+    <script src="js/view.js"></script>
+  </body>
+</html>
