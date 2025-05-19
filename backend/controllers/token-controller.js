@@ -25,7 +25,7 @@ export const getAccessToken = async (req, res) => {
 
     jwt.verify(
       refreshToken,
-      process.env.REFRESH_TOKEN_SECRET,
+      process.env._REFRESH_TOKEN_SECRET,
       (error, decoded) => {
         if (error) {
           return res.status(403).json({
@@ -39,7 +39,7 @@ export const getAccessToken = async (req, res) => {
 
         const accessToken = jwt.sign(
           safeUserData, 
-          process.env.ACCESS_TOKEN_SECRET, 
+          process.env._ACCESS_TOKEN_SECRET, 
           { expiresIn: "15m" }
         );
 

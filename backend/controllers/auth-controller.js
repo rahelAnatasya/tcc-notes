@@ -36,13 +36,13 @@ export async function login(req, res) {
 
     const accessToken = jwt.sign(
       safeUserData, 
-      process.env.ACCESS_TOKEN_SECRET, 
+      process.env._ACCESS_TOKEN_SECRET, 
       { expiresIn: "15m" }
     );
     
     const refreshToken = jwt.sign(
       safeUserData, 
-      process.env.REFRESH_TOKEN_SECRET, 
+      process.env._REFRESH_TOKEN_SECRET, 
       { expiresIn: "7d" }
     );
 

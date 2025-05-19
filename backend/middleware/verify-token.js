@@ -12,7 +12,7 @@ export const verifyToken = (req, res, next) => {
       });
     }
 
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+    jwt.verify(token, process.env._ACCESS_TOKEN_SECRET, (err, decoded) => {
       if (err) {
         return res.status(403).json({
           status: "Error",
