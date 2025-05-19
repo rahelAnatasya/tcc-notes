@@ -1,6 +1,11 @@
 // API base URL - update this to match your backend URL
-const API_URL = "http://localhost:5000/notes";
-const AUTH_URL = "http://localhost:5000";
+const isProduction = window.location.hostname !== 'localhost';
+const BASE_URL = isProduction 
+  ? "https://tcc-notes-backend-REPLACE_WITH_YOUR_PROJECT_ID.run.app" 
+  : "http://localhost:5000";
+  
+const API_URL = `${BASE_URL}/notes`;
+const AUTH_URL = BASE_URL;
 
 // Get auth token from localStorage
 function getToken() {

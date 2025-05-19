@@ -1,11 +1,11 @@
 steps:
   # 1. Build Docker image untuk backend
   - name: "gcr.io/cloud-builders/docker"
-    args: ["build", "-t", "gcr.io/$PROJECT_ID/tugas6-be", "."]
+    args: ["build", "-t", "gcr.io/$PROJECT_ID/tcc-notes-backend", "."]
 
   # 2. Push ke Container Registry / Artifact Registry
   - name: "gcr.io/cloud-builders/docker"
-    args: ["push", "gcr.io/$PROJECT_ID/tugas6-be"]
+    args: ["push", "gcr.io/$PROJECT_ID/tcc-notes-backend"]
 
   # 3. Deploy ke Cloud Run
   - name: "gcr.io/cloud-builders/gcloud"
@@ -14,16 +14,17 @@ steps:
       [
         "run",
         "deploy",
-        "tugas6-be",
+        "tcc-notes-backend",
         "--image",
-        "gcr.io/$PROJECT_ID/tugas6-be",
+        "gcr.io/$PROJECT_ID/tcc-notes-backend",
         "--timeout",
         "1000s",
         "--port",
         "5000",
         "--region",
-        "us-central1",
+        "asia-southeast2",  # Jakarta region
         "--allow-unauthenticated",
+        "--set-env-vars=NODE_ENV=production"
       ]
 
 # Log hanya akan disimpan di Google Cloud Logging
