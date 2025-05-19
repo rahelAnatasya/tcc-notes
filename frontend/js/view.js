@@ -3,6 +3,12 @@
 
 // DOM Elements - Wait for DOM to be fully loaded
 document.addEventListener("DOMContentLoaded", function () {
+  // Check authentication
+  if (!isAuthenticated()) {
+    window.location.href = "login/index.html";
+    return;
+  }
+  
   const noteTitle = document.getElementById("noteTitle");
   const noteContent = document.getElementById("noteContent");
   const noteDate = document.getElementById("noteDate");
@@ -14,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const noteId = getUrlParam("id");
 
   if (!noteId) {
-    showMessage("Note ID not provided", "error");
+    showMessage("ID Catatan tidak tersedia", "error");
     setTimeout(() => {
       window.location.href = "index.html";
     }, 2000);
@@ -36,20 +42,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Delete note
   async function deleteNote(id) {
-    if (!confirm("Are you sure you want to delete this note?")) {
+    if (!confirm("Anda yakin ingin menghapus catatan ini?")) {
       return;
     }
 
     try {
-      const response = await fetch(`${API_URL}/${id}`, {
+      const response = await apiRequest(`${API_URL}/${id}`, {
         method: "DELETE",
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete note");
+      
+      if (!response) {
+        return;
       }
 
-      showMessage("Note deleted successfully!", "success");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Gagal menghapus catatan");
+      }
+      
+      const responseData = await response.json();
+      showMessage(responseData.message || "Catatan berhasil dihapus!", "success");
 
       // Redirect to notes list after a short delay
       setTimeout(() => {
@@ -57,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }, 1000);
     } catch (error) {
       console.error("Error deleting note:", error);
-      showMessage("Failed to delete note. Please try again.", "error");
+      showMessage("Gagal menghapus catatan: " + (error.message || "Silakan coba lagi."), "error");
     }
   }
 });
@@ -65,13 +77,19 @@ document.addEventListener("DOMContentLoaded", function () {
 // Fetch note details
 async function fetchNote(id) {
   try {
-    const response = await fetch(`${API_URL}/${id}`);
-
-    if (!response.ok) {
-      throw new Error("Note not found");
+    const response = await apiRequest(`${API_URL}/${id}`);
+    
+    if (!response) {
+      return;
     }
 
-    const note = await response.json();
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Catatan tidak ditemukan");
+    }
+
+    const responseData = await response.json();
+    const note = responseData.data;
 
     // Update the UI with note data
     document.getElementById("noteTitle").textContent = note.title;
@@ -86,13 +104,13 @@ async function fetchNote(id) {
 
     // Format date
     const noteDate = document.getElementById("noteDate");
-    if (note.updateAt) {
+    if (note.updatedAt) {
       const date = new Date(note.updatedAt);
-      noteDate.textContent = `Last updated: ${date.toLocaleString()}`;
+      noteDate.textContent = `Terakhir diperbarui: ${date.toLocaleString()}`;
     }
   } catch (error) {
     console.error("Error fetching note:", error);
-    showMessage("Failed to load note. Redirecting to notes list...", "error");
+    showMessage("Gagal memuat catatan: " + (error.message || "Catatan tidak ditemukan atau telah dihapus."), "error");
 
     setTimeout(() => {
       window.location.href = "index.html";

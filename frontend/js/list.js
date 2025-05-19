@@ -1,11 +1,14 @@
-// Don't use document.write for loading dependencies
-// Instead, include the script in the HTML file
-
 // DOM Elements - Wait for DOM to be fully loaded
 document.addEventListener("DOMContentLoaded", function () {
   const notesList = document.getElementById("notesList");
   const addNoteButton = document.getElementById("addNoteButton");
-
+  
+  // Check authentication
+  if (!isAuthenticated()) {
+    window.location.href = "login/index.html";
+    return;
+  }
+  
   // Load notes when page loads
   fetchNotes();
 
@@ -17,15 +20,27 @@ document.addEventListener("DOMContentLoaded", function () {
   // Fetch all notes from API
   async function fetchNotes() {
     try {
-      const response = await fetch(API_URL);
-      if (!response.ok) {
-        throw new Error("Failed to fetch notes");
+      const response = await apiRequest(API_URL);
+      
+      if (!response) {
+        return;
       }
-      const notes = await response.json();
-      renderNotes(notes);
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Gagal mengambil catatan");
+      }
+      
+      const responseData = await response.json();
+      
+      if (responseData.status === "Sukses") {
+        renderNotes(responseData.data);
+      } else {
+        showMessage(responseData.message || "Gagal memuat catatan", "error");
+      }
     } catch (error) {
       console.error("Error fetching notes:", error);
-      showMessage("Failed to load notes. Please try again later.", "error");
+      showMessage("Gagal memuat catatan: " + (error.message || "Silakan coba lagi nanti."), "error");
     }
   }
 
@@ -86,24 +101,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Delete note
   async function deleteNote(id) {
-    if (!confirm("Are you sure you want to delete this note?")) {
+    if (!confirm("Anda yakin ingin menghapus catatan ini?")) {
       return;
     }
 
     try {
-      const response = await fetch(`${API_URL}/${id}`, {
+      const response = await apiRequest(`${API_URL}/${id}`, {
         method: "DELETE",
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete note");
+      
+      if (!response) {
+        return;
       }
 
-      showMessage("Note deleted successfully!", "success");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Gagal menghapus catatan");
+      }
+      
+      const responseData = await response.json();
+      showMessage(responseData.message || "Catatan berhasil dihapus", "success");
       fetchNotes();
     } catch (error) {
       console.error("Error deleting note:", error);
-      showMessage("Failed to delete note. Please try again.", "error");
+      showMessage("Gagal menghapus catatan: " + (error.message || "Silakan coba lagi."), "error");
     }
   }
 });

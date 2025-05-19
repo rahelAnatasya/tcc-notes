@@ -1,74 +1,162 @@
 import Note from "../models/note-model.js";
 
-// GET all notes
 export async function getNotes(req, res) {
   try {
+    const userId = req.userId;
+    
     const notes = await Note.findAll({
+      where: { userId },
       order: [["updatedAt", "DESC"]],
     });
-    res.status(200).json(notes);
+    
+    return res.status(200).json({
+      status: "Sukses",
+      message: "Data catatan berhasil diambil",
+      data: notes
+    });
   } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Error:", error);
+    return res.status(500).json({
+      status: "Error",
+      message: "Terjadi kesalahan pada server"
+    });
   }
 }
 
-// GET note by ID
 export async function getNoteById(req, res) {
   try {
-    const note = await Note.findByPk(req.params.id);
+    const userId = req.userId;
+    const noteId = req.params.id;
+    
+    const note = await Note.findOne({
+      where: {
+        id: noteId,
+        userId
+      }
+    });
+    
     if (!note) {
-      return res.status(404).json({ message: "Note not found" });
+      return res.status(404).json({
+        status: "Error",
+        message: "Catatan tidak ditemukan"
+      });
     }
-    res.status(200).json(note);
+    
+    return res.status(200).json({
+      status: "Sukses",
+      message: "Data catatan berhasil diambil",
+      data: note
+    });
   } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Error:", error);
+    return res.status(500).json({
+      status: "Error",
+      message: "Terjadi kesalahan pada server"
+    });
   }
 }
 
-// CREATE note
 export async function createNote(req, res) {
   try {
-    const input = req.body;
-    if (!input || !input.title || !input.content) {
-      return res.status(400).json({ message: "Invalid input" });
+    const { title, content } = req.body;
+    const userId = req.userId;
+    
+    if (!title || !content) {
+      return res.status(400).json({
+        status: "Error",
+        message: "Judul dan isi catatan harus diisi"
+      });
     }
-    await Note.create(input);
-    res.status(201).json({ message: "Note created" });
+    
+    const newNote = await Note.create({
+      title,
+      content,
+      userId
+    });
+    
+    return res.status(201).json({
+      status: "Sukses",
+      message: "Catatan berhasil dibuat",
+      data: newNote
+    });
   } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Error:", error);
+    return res.status(500).json({
+      status: "Error",
+      message: "Terjadi kesalahan pada server"
+    });
   }
 }
 
-// UPDATE note
 export async function updateNote(req, res) {
   try {
-    const input = req.body;
-    const note = await Note.findByPk(req.params.id);
+    const { title, content } = req.body;
+    const userId = req.userId;
+    const noteId = req.params.id;
+    
+    const note = await Note.findOne({
+      where: {
+        id: noteId,
+        userId
+      }
+    });
+    
     if (!note) {
-      return res.status(404).json({ message: "Note not found" });
+      return res.status(404).json({
+        status: "Error",
+        message: "Catatan tidak ditemukan"
+      });
     }
-    await note.update(input);
-    res.status(200).json({ message: "Note updated" });
+    
+    await note.update({
+      title: title || note.title,
+      content: content || note.content
+    });
+    
+    return res.status(200).json({
+      status: "Sukses",
+      message: "Catatan berhasil diperbarui",
+      data: note
+    });
   } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Error:", error);
+    return res.status(500).json({
+      status: "Error",
+      message: "Terjadi kesalahan pada server"
+    });
   }
 }
 
-// DELETE note
 export async function deleteNote(req, res) {
   try {
-    const note = await Note.findByPk(req.params.id);
+    const userId = req.userId;
+    const noteId = req.params.id;
+    
+    const note = await Note.findOne({
+      where: {
+        id: noteId,
+        userId
+      }
+    });
+    
     if (!note) {
-      return res.status(404).json({ message: "Note not found" });
+      return res.status(404).json({
+        status: "Error",
+        message: "Catatan tidak ditemukan"
+      });
     }
+    
     await note.destroy();
-    res.status(200).json({ message: "Note deleted" });
+    
+    return res.status(200).json({
+      status: "Sukses",
+      message: "Catatan berhasil dihapus"
+    });
   } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Error:", error);
+    return res.status(500).json({
+      status: "Error",
+      message: "Terjadi kesalahan pada server"
+    });
   }
 }

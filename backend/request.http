@@ -1,39 +1,59 @@
-GET http://localhost:5000/users
+### Variabel
+@host = http://localhost:5000
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJuZXd1c2VyIiwiY3JlYXRlZEF0IjoiMjAyNS0wNS0xOVQwODo0OToxNS4wMDBaIiwidXBkYXRlZEF0IjoiMjAyNS0wNS0xOVQwOTo0ODo0OS4wMDBaIiwiaWF0IjoxNzQ3NjQ4MTQ5LCJleHAiOjE3NDc2NDkwNDl9.d6g3aF3-Md-MuX4seyzPIvPtggueEFvkl3DtA3R5BOM
 
-###
-POST http://localhost:5000/users
+### Registrasi pengguna baru
+POST {{host}}/register
 Content-Type: application/json
 
 {
-  "name": "John Doe",
-  "email": "johndoe@gmail.com",
-  "password": "123456"
+  "username": "newuser",
+  "password": "securepassword"
 }
 
-###
-GET http://localhost:5000/notes
-
-###
-POST http://localhost:5000/notes
+### Login dengan kredensial
+POST {{host}}/login
 Content-Type: application/json
 
 {
-  "title": "Sample Note",
-  "content": "This is a sample note content",
-  "userId": 1
+  "username": "newuser",
+  "password": "securepassword"
 }
 
-###
-GET http://localhost:5000/notes/1
+### Dapatkan token akses baru dengan token refresh
+GET {{host}}/token
 
-###
-PUT http://localhost:5000/notes/1
+### Logout
+DELETE {{host}}/logout
+
+### Ambil semua catatan
+GET {{host}}/notes
+Authorization: Bearer {{accessToken}}
+
+### Tambah catatan baru
+POST {{host}}/notes
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-  "title": "Updated Note",
-  "content": "This is the updated note content"
+  "title": "Contoh Catatan",
+  "content": "Ini adalah isi dari contoh catatan"
 }
 
-###
-DELETE http://localhost:5000/notes/1
+### Ambil catatan berdasarkan ID
+GET {{host}}/notes/1
+Authorization: Bearer {{accessToken}}
+
+### Perbarui catatan
+PUT {{host}}/notes/2
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "Catatan Diperbarui",
+  "content": "Ini adalah isi catatan yang sudah diperbarui"
+}
+
+### Hapus catatan
+DELETE {{host}}/notes/1
+Authorization: Bearer {{accessToken}}

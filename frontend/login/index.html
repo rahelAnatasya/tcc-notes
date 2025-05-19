@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <nav class="navbar">
+      <div class="navbar-container">
+        <a href="../index.html" class="navbar-brand">TCC NOTES</a>
+      </div>
+    </nav>
+    <div class="container login-container">
+        <div class="note-form">
+            <h1>TCC Notes Login</h1>
+            <div id="message" class="message" style="display: none;"></div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                
+                <button type="submit">Login</button>
+            </form>
+            
+            <p style="margin-top: 15px; text-align: center;">
+                Don't have an account? <a href="../register/index.html">Register here</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch('http://localhost:5000/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Save the token to localStorage
+                    localStorage.setItem('token', data.accessToken);
+                    localStorage.setItem('username', username);
+                    
+                    // Show success message
+                    showMessage('Login berhasil. Mengalihkan...', 'success');
+                    
+                    // Redirect to notes page
+                    setTimeout(() => {
+                        window.location.href = '../index.html';
+                    }, 1500);
+                } else {
+                    showMessage(data.message || 'Login gagal: ' + (response.statusText || 'Username atau password salah'), 'error');
+                }
+            } catch (error) {
+                showMessage('Error connecting to server: ' + (error.message || 'Tidak dapat terhubung ke server'), 'error');
+                console.error('Error:', error);
+            }
+        });
+        
+        function showMessage(text, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.className = `message ${type}`;
+            messageEl.style.display = 'block';
+            
+            setTimeout(() => {
+                messageEl.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
