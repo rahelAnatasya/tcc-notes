@@ -1,20 +1,18 @@
 // API base URL - update this to match your backend URL
-const isProduction = window.location.hostname !== 'localhost';
-const BASE_URL = isProduction 
-  ? "https://tcc-notes-backend-REPLACE_WITH_YOUR_PROJECT_ID.run.app" 
-  : "http://localhost:5000";
-  
+// const isProduction = window.location.hostname !== 'localhost';
+const BASE_URL = "https://tcc-notes-backend-469569820136.us-central1.run.app";
+
 const API_URL = `${BASE_URL}/notes`;
 const AUTH_URL = BASE_URL;
 
 // Get auth token from localStorage
 function getToken() {
-  return localStorage.getItem('token');
+  return localStorage.getItem("token");
 }
 
 // Get username from localStorage
 function getUsername() {
-  return localStorage.getItem('username');
+  return localStorage.getItem("username");
 }
 
 // Check if user is authenticated
@@ -26,18 +24,18 @@ function isAuthenticated() {
 async function refreshToken() {
   try {
     const response = await fetch(`${AUTH_URL}/token`, {
-      method: 'GET',
-      credentials: 'include'
+      method: "GET",
+      credentials: "include",
     });
-    
+
     if (response.ok) {
       const data = await response.json();
-      localStorage.setItem('token', data.accessToken);
+      localStorage.setItem("token", data.accessToken);
       return true;
     }
     return false;
   } catch (error) {
-    console.error('Error refreshing token:', error);
+    console.error("Error refreshing token:", error);
     return false;
   }
 }
@@ -48,77 +46,83 @@ async function logout() {
   if (!confirm("Apakah Anda yakin ingin keluar?")) {
     return; // User cancelled logout
   }
-  
+
   try {
     await fetch(`${AUTH_URL}/logout`, {
-      method: 'DELETE',
-      credentials: 'include'
+      method: "DELETE",
+      credentials: "include",
     });
-    localStorage.removeItem('token');
-    localStorage.removeItem('username');
-    window.location.href = 'login/index.html';
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    window.location.href = "login/index.html";
   } catch (error) {
-    console.error('Error during logout:', error);
+    console.error("Error during logout:", error);
   }
 }
 
 // API request with token refresh capability
 async function apiRequest(url, options = {}) {
   const token = getToken();
-  
+
   if (!token) {
-    window.location.href = 'login/index.html';
+    window.location.href = "login/index.html";
     return null;
   }
-  
+
   // Set auth header if not already set
   if (!options.headers) {
     options.headers = {};
   }
-  
-  options.headers['Authorization'] = `Bearer ${token}`;
-  
+
+  options.headers["Authorization"] = `Bearer ${token}`;
+
   try {
     let response = await fetch(url, options);
-    
+
     // If unauthorized, try to refresh token
     if (response.status === 401 || response.status === 403) {
       const refreshed = await refreshToken();
-      
+
       if (refreshed) {
         // Retry with new token
-        options.headers['Authorization'] = `Bearer ${getToken()}`;
+        options.headers["Authorization"] = `Bearer ${getToken()}`;
         response = await fetch(url, options);
       } else {
         // Redirect to login if refresh failed
-        localStorage.removeItem('token');
-        localStorage.removeItem('username');
-        showMessage('Sesi telah berakhir. Silakan login kembali.', 'error');
+        localStorage.removeItem("token");
+        localStorage.removeItem("username");
+        showMessage("Sesi telah berakhir. Silakan login kembali.", "error");
         setTimeout(() => {
-          window.location.href = 'login/index.html';
+          window.location.href = "login/index.html";
         }, 2000);
         return null;
       }
     }
-    
+
     // If response is not ok, try to get error message from response
     if (!response.ok) {
       try {
         const errorData = await response.json();
         if (errorData.message) {
-          showMessage(errorData.message, 'error');
+          showMessage(errorData.message, "error");
         } else {
-          showMessage(`Error: ${response.status} - ${response.statusText}`, 'error');
+          showMessage(
+            `Error: ${response.status} - ${response.statusText}`,
+            "error"
+          );
         }
       } catch {
-        showMessage(`Error: ${response.status} - ${response.statusText}`, 'error');
+        showMessage(
+          `Error: ${response.status} - ${response.statusText}`,
+          "error"
+        );
       }
     }
-    
+
     return response;
   } catch (error) {
-    console.error('API request error:', error);
-    showMessage('Terjadi kesalahan saat menghubungi server', 'error');
+    console.error("API request error:", error);
+    showMessage("Terjadi kesalahan saat menghubungi server", "error");
     return null;
   }
 }
