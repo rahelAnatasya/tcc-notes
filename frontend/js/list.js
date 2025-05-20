@@ -13,9 +13,11 @@ document.addEventListener("DOMContentLoaded", function () {
   fetchNotes();
 
   // Event Listeners
-  addNoteButton.addEventListener("click", () => {
-    window.location.href = "add.html";
-  });
+  if (addNoteButton) {
+    addNoteButton.addEventListener("click", () => {
+      window.location.href = "add.html";
+    });
+  }
 
   // Fetch all notes from API
   async function fetchNotes() {

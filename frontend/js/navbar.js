@@ -1,11 +1,17 @@
 // navbar.js - Common navigation functionality
 document.addEventListener("DOMContentLoaded", function() {
+    // Check if user is authenticated
+    if (!isAuthenticated()) {
+        window.location.href = 'login/index.html';
+        return;
+    }
+
     // Check if navbar exists on the page
     const navbarUser = document.getElementById("navbarUser");
     if (!navbarUser) return;
     
     // Display user info in navbar
-    const username = localStorage.getItem('username') || 'User';
+    const username = getUsername() || 'User';
     const userInitial = username.charAt(0).toUpperCase();
     
     const userInfoHTML = `
@@ -21,34 +27,8 @@ document.addEventListener("DOMContentLoaded", function() {
     // Add logout event handler
     const logoutButton = document.getElementById("logoutButton");
     if (logoutButton) {
-        logoutButton.onclick = function() {
-            // Show confirmation dialog
-            if (confirm("Apakah Anda yakin ingin keluar?")) {
-                console.log("Logout confirmed");
-                // Perform logout
-                try {
-                    fetch("http://localhost:5000/logout", {
-                        method: 'DELETE',
-                        credentials: 'include'
-                    }).finally(() => {
-                        // Clear local storage regardless of server response
-                        localStorage.removeItem('token');
-                        localStorage.removeItem('username');
-                        
-                        // Redirect to login page
-                        window.location.href = 'login/index.html';
-                    });
-                } catch (error) {
-                    console.error('Error during logout:', error);
-                    // Still redirect to login page even if there's an error
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('username');
-                    window.location.href = 'login/index.html';
-                }
-            } else {
-                console.log("Logout cancelled");
-            }
-            return false; // Prevent default
+        logoutButton.onclick = async function() {
+            await logout();
         };
     }
 });

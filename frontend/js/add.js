@@ -1,6 +1,3 @@
-// Don't use document.write for loading dependencies
-// Instead, include the script in the HTML file
-
 // DOM Elements - Wait for DOM to be fully loaded
 document.addEventListener("DOMContentLoaded", function () {
   // Check authentication
@@ -13,6 +10,12 @@ document.addEventListener("DOMContentLoaded", function () {
   const contentInput = document.getElementById("content");
   const saveButton = document.getElementById("saveButton");
   const cancelButton = document.getElementById("cancelButton");
+
+  // Ensure all elements exist
+  if (!titleInput || !contentInput || !saveButton || !cancelButton) {
+    console.error("Required elements not found on page");
+    return;
+  }
 
   // Event Listeners
   saveButton.addEventListener("click", saveNote);
@@ -39,6 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ title, content }),
+        credentials: 'include', // Add this to include cookies/credentials
       });
       
       if (!response) {

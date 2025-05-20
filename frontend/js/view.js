@@ -1,6 +1,3 @@
-// Don't use document.write for loading dependencies
-// Instead, include the script in the HTML file
-
 // DOM Elements - Wait for DOM to be fully loaded
 document.addEventListener("DOMContentLoaded", function () {
   // Check authentication
@@ -15,6 +12,12 @@ document.addEventListener("DOMContentLoaded", function () {
   const editButton = document.getElementById("editButton");
   const deleteButton = document.getElementById("deleteButton");
   const backButton = document.getElementById("backButton");
+
+  // Ensure all elements exist
+  if (!noteTitle || !noteContent || !editButton || !deleteButton || !backButton) {
+    console.error("Required elements not found on page");
+    return;
+  }
 
   // Get note ID from URL
   const noteId = getUrlParam("id");

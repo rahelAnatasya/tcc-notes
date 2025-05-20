@@ -1,5 +1,4 @@
 // API base URL - update this to match your backend URL
-// const isProduction = window.location.hostname !== 'localhost';
 const BASE_URL = "https://tcc-notes-backend-469569820136.us-central1.run.app";
 
 const API_URL = `${BASE_URL}/notes`;
@@ -18,6 +17,57 @@ function getUsername() {
 // Check if user is authenticated
 function isAuthenticated() {
   return getToken() !== null;
+}
+
+// Login user
+async function login(username, password) {
+  try {
+    const response = await fetch(`${AUTH_URL}/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({ username, password }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      localStorage.setItem("token", data.accessToken);
+      localStorage.setItem("username", username);
+      return { success: true, message: "Login berhasil" };
+    } else {
+      return { success: false, message: data.message || "Login gagal" };
+    }
+  } catch (error) {
+    console.error("Login error:", error);
+    return { success: false, message: "Terjadi kesalahan pada server" };
+  }
+}
+
+// Register user
+async function register(username, password) {
+  try {
+    const response = await fetch(`${AUTH_URL}/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username, password }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      return { success: true, message: "Registrasi berhasil" };
+    } else {
+      return { success: false, message: data.message || "Registrasi gagal" };
+    }
+  } catch (error) {
+    console.error("Register error:", error);
+    return { success: false, message: "Terjadi kesalahan pada server" };
+  }
 }
 
 // Handle token refresh
