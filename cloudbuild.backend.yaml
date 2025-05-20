@@ -25,6 +25,8 @@ steps:
         "--region",
         "us-central1",
         "--allow-unauthenticated",
+        "--set-env-vars",
+        "_ACCESS_TOKEN_SECRET=your_secure_access_token_secret_here,_REFRESH_TOKEN_SECRET=your_secure_refresh_token_secret_here,NODE_ENV=production",
       ]
 
 # Log hanya akan disimpan di Google Cloud Logging
