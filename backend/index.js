@@ -10,9 +10,8 @@ dotenv.config();
 const PORT = process.env.PORT || 5000;
 
 const app = express();
-
 app.use(cors({
-    origin: '*',
+    origin: ['http://localhost:5000', 'https://tcc-notes-frontend-469569820136.us-central1.run.app'],
     credentials: true
 }));
 app.use(cookieParser());
